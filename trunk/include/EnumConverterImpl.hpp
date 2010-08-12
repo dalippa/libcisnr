@@ -17,6 +17,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 #include <map>
 #include <string>
@@ -61,7 +62,7 @@ template<typename E, bool throws>
   unknown_enum_string(unk_as_str), unknown_enum(unk) 
   { 
     std::vector<std::string> splat; 
-    boost::split( splat, values_as_comma_sep_list, boost::algorithm::is_any_of(", ") ); 
+    boost::split( splat, values_as_comma_sep_list, boost::algorithm::is_any_of(",") );
     
     registerEnum(unk, unk_as_str);
 
@@ -69,7 +70,7 @@ template<typename E, bool throws>
     va_start(ap, en);
     for (std::vector<std::string>::const_iterator i = splat.begin(); i != splat.end(); ++i)
     {
-      registerEnum(en, *i);
+      registerEnum(en, boost::algorithm::trim_copy(*i));
       en = (E) va_arg(ap, int);
     }
   }
