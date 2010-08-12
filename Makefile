@@ -18,13 +18,16 @@ LIBS = -static -L. -l$(APP) -lcppunit
 TEST_APP = UnitTests
 
 lib:
-	make -C src
+	@make -C src
 
 clean:
-	make -C src clean
+	@make -C src clean
 	@rm -f TAGS
-	@~/work/dotags
+	@$(HOME)/work/dotags
+
+distclean: clean
+	@rm -f TAGS
 
 runtest: clean
-	make -C src
-	make -C test runtest
+	@make -C src
+	@make -C test runtest
