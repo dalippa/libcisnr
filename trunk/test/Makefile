@@ -20,13 +20,13 @@ LIBS = -static -L../lib -l$(APP) -lcppunit
 TEST_APP = UnitTests
 
 test: clean depend
-	$(CXX) $(CXXFLAGS) $(INCLUDES) TestMain.cpp -o $(TEST_APP) $(LIBS) $(OBJS)
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) TestMain.cpp -o $(TEST_APP) $(LIBS) $(OBJS)
 
 clean:
-	@rm -f TAGS $(TEST_APP) *.o *~
+	@rm -f ./$(TEST_APP) *.o *~
 
 runtest: test
-	./$(TEST_APP)
+	@./$(TEST_APP)
 
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $<

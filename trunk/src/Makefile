@@ -22,10 +22,10 @@ TEST_APP = UnitTests
 OUT_DIR = ../lib
 
 lib: depend $(LIB_OBJS)
-	ar cq $(OUT_DIR)/lib$(APP).a $(LIB_OBJS)
+	@ar cq $(OUT_DIR)/lib$(APP).a $(LIB_OBJS)
 
 clean:
-	rm -f $(APP) TAGS *.o *~ $(OUT_DIR)/lib$(APP).a
+	@rm -f $(APP) TAGS *.o *~ $(OUT_DIR)/lib$(APP).a
 
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $<
