@@ -1,11 +1,11 @@
-/*
- * The information in this file is
- * Copyright(c) David Lippa (dalippa@gmail.com)
- * and is subject to the terms and conditions of the
- * GNU Lesser General Public License Version 2.1
- * The license text is available from   
- * http://www.gnu.org/licenses/lgpl.html
- */
+#
+# The information in this file is
+# Copyright(c) David Lippa (dalippa@gmail.com)
+# and is subject to the terms and conditions of the
+# GNU Lesser General Public License Version 2.1
+# The license text is available from   
+# http://www.gnu.org/licenses/lgpl.html
+#
 MAKEDEPEND = makedepend
 
 OBJS = 
@@ -22,7 +22,7 @@ lib:
 
 clean:
 	make -C src clean
-	@rm TAGS
+	@rm -f TAGS
 	@~/work/dotags
 
 runtest: clean
