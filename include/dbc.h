@@ -18,7 +18,7 @@ extern void dbc_assert(const std::string& condition, const std::string& filename
                        bool do_throw = false);
 
 #ifndef INVARIANT
-#define INVARIANT(x) { if (!x) { ASSERT(x, __FILE__, __LINE__, true); } }
+#define INVARIANT(x) { if (!x) { ASSERT(x, __FILE__, __LINE__); } }
 #endif
 #ifndef INVARIANTRV
 #define INVARIANTRV(x, rv) { if (!x) { ASSERTRV(x, __FILE__, __LINE__); return rv; } }
