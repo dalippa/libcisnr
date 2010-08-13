@@ -11,14 +11,32 @@ MAKEDEPEND = makedepend
 OBJS = 
 TEST_OBJS = TestMain.o
 
-CXXFLAGS = -g -Wall -DDEBUG
-CFLAGS = -g -Wall -std=c99 -DDEBUG
+CXXFLAGS = -Wall
+CFLAGS_BAS = -Wall -std=c99
 INCLUDES = 
 LIBS = -static -L. -l$(APP) -lcppunit
 TEST_APP = UnitTests
 
-lib:
-	@make -C src
+ifeq ($(COVERAGE), 1)
+CXXFLAGS = -ftest-coverage -fprofile-arcs
+CFLAGS = -ftest-coverage -fprofile-arcs
+COVERAGE_APP = gcov
+COVERAGE_FLAGS =
+else
+COVERAGE_APP = file
+endif
+
+ifeq ($(DEBUG), 1)
+CXXFLAGS := "$(CXXFLAGS) -g -DDEBUG"
+CFLAGS := "$(CFLAGS) -g -DDEBUG"
+else
+CXXFLAGS := "$(CXXFLAGS) -O2"
+CFLAGS := "$(CFLAGS) -O2"
+endif
+
+all:
+	@echo Building library...
+	@make CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) COVERAGE_APP=$(COVERAGE_APP) COVERAGE_FLAGS=$(COVERAGE_FLAGS) -C src
 
 clean:
 	@make -C test clean
@@ -30,5 +48,5 @@ distclean: clean
 	@rm -f TAGS
 
 runtest: clean
-	@make -C src
-	@make -C test runtest
+	@make CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) COVERAGE_APP=$(COVERAGE_APP) COVERAGE_FLAGS=$(COVERAGE_FLAGS) -C src
+	@make CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS) COVERAGE_APP=$(COVERAGE_APP) COVERAGE_FLAGS=$(COVERAGE_FLAGS) -C test runtest

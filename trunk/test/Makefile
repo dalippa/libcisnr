@@ -13,28 +13,34 @@ APP = cisnr
 OBJS = SingletonClasses.o
 TEST_OBJS = $(OBJS) PluggableSingletonTest.o
 
-CXXFLAGS = -g -Wall -DDEBUG
-CFLAGS = -g -Wall -std=c99 -DDEBUG
 INCLUDES = -I../include -I.
 LIBS = -static -L../lib -l$(APP) -lcppunit
 TEST_APP = UnitTests
+MAIN = TestMain.cpp
 
 test: clean depend $(TEST_OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) TestMain.cpp -o $(TEST_APP) $(TEST_OBJS) $(LIBS)
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) $(MAIN) -o $(TEST_APP) $(TEST_OBJS) $(LIBS)
 
 clean:
-	rm -f ./$(TEST_APP) *.o *~
+	@rm -f ./$(TEST_APP) *.o *~
+	@rm -f *.gcov *.gcno *.gcda
+	@rm -rf html_report coverage.tmp
 
 runtest: test
-	./$(TEST_APP)
+	@./$(TEST_APP)
+	@$(COVERAGE_APP) $(COVERAGE_FLAGS) $(MAIN)
+	@geninfo --no-checksum --output-filename coverage.tmp .
+	@mkdir html_report
+	@genhtml -o ./html_report coverage.tmp
 
 .c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
+#	$(COVERAGE_APP) $(COVERAGE_FLAGS) $<
 
 depend:
-	$(MAKEDEPEND) $(INCLUDES)
+	@$(MAKEDEPEND) $(INCLUDES)
 
 # DO NOT DELETE
