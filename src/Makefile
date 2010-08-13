@@ -7,13 +7,12 @@
 # http://www.gnu.org/licenses/lgpl.html
 #
 MAKEDEPEND = makedepend
+SHELL = /bin/bash
 
 APP = cisnr
 
 LIB_OBJS = dbc.o
 
-CXXFLAGS = -g -Wall -DDEBUG
-CFLAGS = -g -Wall -std=c99 -DDEBUG
 INCLUDES = -I../include
 LIBS = -static -L. -l$(APP) -lcppunit
 TEST_APP = UnitTests
@@ -26,6 +25,7 @@ runtest:
 
 clean:
 	@rm -f $(APP) TAGS *.o *~ $(OUT_DIR)/lib$(APP).a
+	@rm -f *.gcov *.gcno
 
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $<
