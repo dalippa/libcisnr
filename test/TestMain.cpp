@@ -8,10 +8,10 @@
  */
 #include "TestCommon.h"
 
-#include "EnumTests.h"
-#include "SwitchTests.h"
-
 #include "AlgTests.h"
+#include "EnumTests.h"
+#include "PluggableSingletonTest.h"
+#include "SwitchTests.h"
 
 #include <cppunit/TextOutputter.h>
 
@@ -27,6 +27,7 @@ int main(int argc, const char* argv[])
   runner.addTest(SwitchTests::suite());
   runner.addTest(EnumTests::suite());
   runner.addTest(AlgTests::suite());
+  runner.addTest(PluggableSingletonTest::suite());
   runner.run(controller);
 
   TextOutputter to(&trc, std::cerr);

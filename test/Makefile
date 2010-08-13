@@ -10,8 +10,8 @@ MAKEDEPEND = makedepend
 
 APP = cisnr
 
-OBJS = 
-TEST_OBJS = TestMain.o
+OBJS = SingletonClasses.o
+TEST_OBJS = $(OBJS) PluggableSingletonTest.o
 
 CXXFLAGS = -g -Wall -DDEBUG
 CFLAGS = -g -Wall -std=c99 -DDEBUG
@@ -19,22 +19,22 @@ INCLUDES = -I../include -I.
 LIBS = -static -L../lib -l$(APP) -lcppunit
 TEST_APP = UnitTests
 
-test: clean depend
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) TestMain.cpp -o $(TEST_APP) $(LIBS) $(OBJS)
+test: clean depend $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) TestMain.cpp -o $(TEST_APP) $(TEST_OBJS) $(LIBS)
 
 clean:
-	@rm -f ./$(TEST_APP) *.o *~
+	rm -f ./$(TEST_APP) *.o *~
 
 runtest: test
-	@./$(TEST_APP)
+	./$(TEST_APP)
 
 .c.o:
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $<
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
 .cpp.o:
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
 depend:
-	@$(MAKEDEPEND) $(INCLUDES)
+	$(MAKEDEPEND) $(INCLUDES)
 
 # DO NOT DELETE

@@ -9,6 +9,7 @@
 #ifndef TEST_COMMON_H
 #define TEST_COMMON_H
 
+#include <cppunit/TestAssert.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
@@ -17,5 +18,7 @@
 #include <cppunit/TestRunner.h>
 
 #define ADDTEST(suite, classname, method) suite->addTest(new CppUnit::TestCaller<classname>(#method, &classname::method));
+
+#include <memory>
 
 #endif
