@@ -11,8 +11,6 @@ MAKEDEPEND = makedepend
 APP = cisnr
 
 LIB_OBJS = dbc.o
-OBJS = 
-TEST_OBJS = TestMain.o
 
 CXXFLAGS = -g -Wall -DDEBUG
 CFLAGS = -g -Wall -std=c99 -DDEBUG
@@ -23,6 +21,8 @@ OUT_DIR = ../lib
 
 lib: depend $(LIB_OBJS)
 	@ar cq $(OUT_DIR)/lib$(APP).a $(LIB_OBJS)
+
+runtest:
 
 clean:
 	@rm -f $(APP) TAGS *.o *~ $(OUT_DIR)/lib$(APP).a
