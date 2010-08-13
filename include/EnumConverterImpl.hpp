@@ -49,7 +49,7 @@ template<typename E, bool throws>
    
   E toEnum(const std::string& str) const {           
     typename StringToType::const_iterator found = stt.find(str);       
-    if (found != tts.end()) return *found; 
+    if (found != stt.end()) return found->second; 
     if (throws) throw std::invalid_argument(std::string(typeid(E).name()) + " was not properly registered!"); 
     return unknown_enum; 
   } 
