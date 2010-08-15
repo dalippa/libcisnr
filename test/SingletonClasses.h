@@ -11,7 +11,6 @@ class FromHeader
   protected:
   FromHeader() {}
 };
-MakePluggableSingleton(FromHeader);
 
 class FromCpp
 {
@@ -19,8 +18,7 @@ class FromCpp
   int getValue() const;
 
   protected:
-  FromCpp() {}
+  FromCpp();
 };
-MakePluggableSingleton(FromCpp);
 
 #endif
