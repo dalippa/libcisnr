@@ -4,6 +4,9 @@
 
 using CppUnit::TestCase;
 
+MakePluggableSingleton(FromHeader);
+MakePluggableSingleton(FromCpp);
+
 PluggableSingletonTest::PluggableSingletonTest() :
   TestCase(typeid(this).name())
 {
@@ -19,8 +22,10 @@ void PluggableSingletonTest::tearDown()
 
 void PluggableSingletonTest::testSingleton()
 {
-  int value = PluggableSingleton<FromHeader, false>::getInstance().getValue();
+  const FromHeader& FH(PluggableSingleton<FromHeader, false>::getInstance());
+  int value = FH.getValue();
   CPPUNIT_ASSERT_EQUAL(value, 10);
+
   value = PluggableSingleton<FromCpp, true>::getInstance().getValue();
   CPPUNIT_ASSERT_EQUAL(value, 20);
 }
