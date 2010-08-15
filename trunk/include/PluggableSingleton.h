@@ -9,17 +9,17 @@
 #ifndef PLUGGABLE_SINGLETON_H
 #define PLUGGABLE_SINGLETON_H
 
-/**
- *
- * Usage: declare this with your class to make it a Singleton.
- * Then, in the CPP file for your class, define the static variable
- */
 template<typename M, bool global_writable>
 class PluggableSingleton
 {
   PluggableSingleton() {}
 };
 
+/**
+ * Usage: Declare this in a CPP file where the singleton is being used
+ *        so it may be instantiated. See unit tests for examples until
+ *        new documentation is added.
+ */
 #ifndef MakePluggableSingleton
 #define MakePluggableSingleton(TP) \
 template<> class PluggableSingleton<TP, true> : public TP    \
@@ -28,12 +28,16 @@ template<> class PluggableSingleton<TP, true> : public TP    \
   public: \
   static PluggableSingleton<TP, true>& getInstance() { return _s; } \
 };\
+\
+PluggableSingleton<TP, true> PluggableSingleton<TP, true>::_s;        \
+\
 template<> class PluggableSingleton<TP, false> : public TP    \
 { \
   static PluggableSingleton<TP, false> _s;            \
   public: \
   static const PluggableSingleton<TP, false>& getInstance() { return _s; }    \
-};
+}; \
+PluggableSingleton<TP, false> PluggableSingleton<TP, false>::_s;
 
 #endif
 

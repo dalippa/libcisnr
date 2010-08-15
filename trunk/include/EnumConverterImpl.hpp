@@ -26,8 +26,20 @@
 #include <iostream>
 #endif
 
-template<typename E, bool throws>
- class EnumConverterImpl
+/**
+ * In the current implementation, the Controller is a Singleton.
+ * In the future, if one can declare an EnumConverter not as a Singleton,
+ * that class must provide a means of determining whether to throw on not found.
+ *
+ * Controller is some class in the derived hierarchy that handles the instance
+ * variable of whether this class throws. Has to be an instance variable
+ * since we don't want to have 2 converters, one for throwing and one for not -
+ * or worse yet, have the nothrow version catch the exception of the throwing one.
+ * That would be too slow. This is more "Java-style" - implementing a contract
+ * via an interface.
+ */
+template<typename E, typename Controller>
+class EnumConverterImpl
 {
   public:
 #ifdef DEBUG
@@ -43,14 +55,17 @@ template<typename E, bool throws>
   const char* const toString(E t) const {             
     typename TypeToString::const_iterator found = tts.find(t); 
     if (found != tts.end()) return &(found->second)[0]; 
-    if (throws) throw std::invalid_argument(std::string(typeid(E).name()) + " was not properly registered!"); 
+    // FIXME: temporary - controllers are read-only for EnumConverterImpl
+    if (dynamic_cast<const Controller* const>(this)->throwsOnNotFound()) // defined in subclass
+      throw std::invalid_argument(std::string(typeid(E).name()) + " was not properly registered!"); 
     return unknown_enum_string.c_str(); 
   } 
    
   E toEnum(const std::string& str) const {           
     typename StringToType::const_iterator found = stt.find(str);       
-    if (found != stt.end()) return found->second; 
-    if (throws) throw std::invalid_argument(std::string(typeid(E).name()) + " was not properly registered!"); 
+    if (found != stt.end()) return found->second;
+    if (dynamic_cast<const Controller* const>(this)->throwsOnNotFound()) // defined in subclass
+      throw std::invalid_argument(std::string(typeid(E).name()) + " was not properly registered!"); 
     return unknown_enum; 
   } 
 
@@ -61,10 +76,10 @@ template<typename E, bool throws>
   EnumConverterImpl(E unk, const std::string& unk_as_str, const std::string& values_as_comma_sep_list, E en, ...) : 
   unknown_enum_string(unk_as_str), unknown_enum(unk) 
   { 
-    std::vector<std::string> splat; 
+    std::vector<std::string> splat;
     boost::split( splat, values_as_comma_sep_list, boost::algorithm::is_any_of(",") );
     
-    registerEnum(unk, unk_as_str);
+    registerEnum(unk, boost::algorithm::trim_copy(unk_as_str));
 
     va_list ap;
     va_start(ap, en);
@@ -91,6 +106,5 @@ template<typename E, bool throws>
   const std::string unknown_enum_string;
   const E unknown_enum;
 };
-
 
 #endif

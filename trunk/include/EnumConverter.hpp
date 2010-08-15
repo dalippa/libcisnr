@@ -21,19 +21,25 @@
 #include <vector>
 
 #include "EnumConverterImpl.hpp"
+#include "PluggableSingleton.h"
 
-// GENERAL PURPOSE CLASSES - FORCE REGISTRATION.
-// If RegisterEnum() is called, then a specialization will be used
-template<typename E, bool throws>
- class EnumConverter
+class EnumConverterController
 {
-  EnumConverter()
-  {
-    throw std::domain_error("This functionality is not implemented unless you register your enums!");
-  }
+   bool _throws;
+ public:
+   EnumConverterController(bool throws) : _throws(throws) {}
+   const bool throwsOnNotFound() const { return _throws; }
 };
 
-// END GENERAL PURPOSE CLASSES
+template<typename E, bool throws_on_error> class EnumConverter
+{
+  EnumConverter() {}
+};
+
+template<typename E, bool throws_on_error> class EnumConverterSingleton
+{
+  EnumConverterSingleton() {}
+};
 
 // an EnumConverter cannot be defined for a type unless it has been registered
 #ifndef RegisterEnum
@@ -41,30 +47,20 @@ template<typename E, bool throws>
    MakeEnumConverterImpl(tp, unknown_value, #unknown_value, #enum_values, enum_values);
 #endif
 
-// MakeEnumConverterImpl uses template specialization to make it work!
+// We now can have an EnumConverter that can be declared on the fly anywhere
 #ifndef MakeEnumConverterImpl
 #define MakeEnumConverterImpl(tp, unknown_enum_in, unknown_enum_as_str, enum_values_as_string_list, enum_values...) \
-/* Class with private c-tor that is owned by EnumConverter that won't throw if the programmer registered */ \
-template<bool throws>                                        \
-class EnumConverter<tp, throws> : public EnumConverterImpl<tp, throws> \
-{ \
-  \
+template<bool throws_on_error> \
+class EnumConverter<tp, throws_on_error> : public EnumConverterImpl<tp, EnumConverterController>, public EnumConverterController { \
   public: \
-  \
-  /* better to return static references than pointers. one less null check */ \
-  static const EnumConverter<tp, throws>& getInstance() { return mConverter; } \
-  \
-  /* if no registration - this won't compile. Our guarantee that they registered at compile time. */ \
-  static EnumConverter<tp, throws> mConverter; \
-  \
-  private: \
-  \
   EnumConverter() : \
-    EnumConverterImpl<tp, throws>(unknown_enum_in, unknown_enum_as_str, enum_values_as_string_list, enum_values) \
-      {} \
+  EnumConverterImpl<tp, EnumConverterController>(unknown_enum_in, unknown_enum_as_str, enum_values_as_string_list, enum_values), \
+  EnumConverterController(throws_on_error) {} \
 }; \
-\
-template<bool throws> EnumConverter<tp, throws> EnumConverter<tp, throws>::mConverter;
+/* Syntactic sugar is below */ \
+/* TODO: Document this 
+template<bool throws_on_error> \
+class EnumConverterSingleton<tp, throws_on_error> : public PluggableSingleton<EnumConverter<tp, throws_on_error>, false> {}; */
 #endif
 
 #endif

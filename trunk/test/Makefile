@@ -11,27 +11,42 @@ MAKEDEPEND = makedepend
 APP = cisnr
 
 OBJS = SingletonClasses.o
-TEST_OBJS = $(OBJS) PluggableSingletonTest.o
+TEST_OBJS = $(OBJS) PluggableSingletonTest.o EnumTests.o
+OBJ_LIB = $(APP)_unittests
+OBJ_LIB_FILE = lib$(OBJ_LIB).a
 
 INCLUDES = -I../include -I.
-LIBS = -static -L../lib -l$(APP) -lcppunit
+LIBS = -static -L../lib -L../test -l$(APP) -l$(OBJ_LIB) -lcppunit -l$(OBJ_LIB)
 TEST_APP = UnitTests
 MAIN = TestMain.cpp
 
-test: clean depend $(TEST_OBJS)
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) $(MAIN) -o $(TEST_APP) $(TEST_OBJS) $(LIBS)
+ifeq ($(COVERAGE), 1)
+GENINFO = geninfo --no-checksum --output-filename coverage.tmp .
+HTML_REPORT = mkdir html_report
+GEN_HTML = genhtml -o ./html_report coverage.tmp
+else
+GENINFO = true
+HTML_REPORT = true
+GEN_HTML = true
+endif
+
+test: clean depend testlib
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MAIN) -o $(TEST_APP) $(LIBS)
+
+testlib: $(TEST_OBJS)
+	ar crv $(OBJ_LIB_FILE) $(TEST_OBJS)
 
 clean:
 	@rm -f ./$(TEST_APP) *.o *~
 	@rm -f *.gcov *.gcno *.gcda
-	@rm -rf html_report coverage.tmp
+	@rm -rf html_report coverage.tmp $(OBJ_LIB_FILE)
 
 runtest: test
 	@./$(TEST_APP)
 	@$(COVERAGE_APP) $(COVERAGE_FLAGS) $(MAIN)
-	@geninfo --no-checksum --output-filename coverage.tmp .
-	@mkdir html_report
-	@genhtml -o ./html_report coverage.tmp
+	@$(GENINFO)
+	@$(HTML_REPORT)
+	@$(GEN_HTML)
 
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $<
