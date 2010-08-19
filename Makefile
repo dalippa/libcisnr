@@ -42,7 +42,7 @@ clean:
 	@make -C test clean
 	@make -C src clean
 	@rm -f TAGS
-	@$(HOME)/work/dotags
+	@find $(PWD) -name "*.h" -o -name "*.hpp" -o -name "*.cpp" | xargs etags --output=TAGS -
 
 distclean: clean
 	@rm -f TAGS
